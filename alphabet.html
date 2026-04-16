@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/p5@2.2.0/lib/p5.js"></script>  
+  <meta charset="utf-8">
+</head>
+<body>
+<script>
+let font;
+
+async function setup() {
+  createCanvas(windowWidth, windowHeight);
+  font = await loadFont('Inconsolata-Regular.ttf');
+}
+
+function draw() {
+  background(0);
+//  textAlign(CENTER, CENTER);
+  textSize(160);
+  textWrap(CHAR);
+  noFill();
+
+  let contours = font.textToContours('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 10, 10, width, {
+    sampleFactor: 0.5
+  });
+
+  for (let layer = 0; layer < 15; layer++) {
+    let maxExpand = layer * 4;
+    stroke(50 + layer * 14);
+
+    for (const pts of contours) {
+      beginShape();
+
+      for (const pt of pts) {
+        let d = dist(pt.x, pt.y, mouseX, mouseY);
+
+        // how much this point is affected by the mouse
+        let influence = map(d, 0, 300, 1, 0, true);
+
+        // wobble also grows when mouse gets closer
+        let wobbleAmount = influence * 6;
+        let wobbleX = wobbleAmount * sin(pt.y * 0.1 + millis() * 0.01);
+        let wobbleY = wobbleAmount * cos(pt.x * 0.1 + millis() * 0.01);
+
+        // expansion is hidden when far away, revealed when close
+        let expand = maxExpand * influence;
+
+        let dx = pt.x - mouseX;
+        let dy = pt.y - mouseY;
+        let angle = atan2(dy, dx);
+
+        let x = pt.x + wobbleX + cos(angle) * expand;
+        let y = pt.y + wobbleY + sin(angle) * expand;
+
+        vertex(x, y);
+      }
+
+      endShape(CLOSE);
+    }
+  }
+
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+</script>
+</body>
+</html>
