@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/p5@2.2.0/lib/p5.js"></script>  
+  <meta charset="utf-8">
+</head>
+<body>
+<script>
+let font;
+
+async function setup() {
+  createCanvas(windowWidth, windowHeight);
+  font = await loadFont('Inconsolata-Regular.ttf');
+}
+
+function draw() {
+  background(0);
+  textAlign(CENTER, CENTER);
+  textSize(160);
+
+  let contours = font.textToContours('p5*js', width / 2, height / 2, {
+    sampleFactor: 0.5
+  });
+//    let contours = font.textToContours('p5*js', width / 2, height / 2, {
+//    sampleFactor: 0.5
+//  });
+    
+
+  noFill();
+//  stroke(255);
+
+
+  for (let layer = 0; layer < 15; layer++) {
+    let expand = layer * 5;
+//      stroke(50+layer*20);
+     stroke(
+      50 + layer * 10,
+      100 + layer * 5,
+      180 + sin(frameCount*0.1 + layer * 0.4) * 60
+    );
+
+
+    for (const pts of contours) {
+      beginShape();
+      for (const pt of pts) {
+        let wobbleX = 5*sin(pt.y*0.1 + millis()*0.01);
+
+          let dx = pt.x - mouseX;
+        let dy = pt.y - mouseY;
+        let angle = atan2(dy, dx);
+
+        let x = pt.x + wobbleX + cos(angle) * expand;
+        let y = pt.y + +sin(angle) * expand;
+
+
+        vertex(x, y);
+      }
+      endShape(CLOSE);
+    }
+  }
+
+  describe('The text p5*js drawn as multiple expanding outline contour layers');
+}
+</script>
+</body>
+</html>
