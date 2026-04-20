@@ -37,7 +37,7 @@
             noFill();
 
             let contours = font.textToContours('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 20, 10, width, {
-                sampleFactor: 0.5
+                sampleFactor: 0.1
             });
 
             for (let layer = 0; layer < 15; layer++) {
@@ -68,7 +68,7 @@
                         let x = pt.x + wobbleX + cos(angle) * expand;
                         let y = pt.y + wobbleY + sin(angle) * expand;
 
-                        vertex(x, y);
+                        splineVertex(x, y);
                     }
 
                     endShape(CLOSE);
