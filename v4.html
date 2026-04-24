@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/p5@2.2.0/lib/p5.js"></script>
+  <meta charset="utf-8">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: black;
+    }
+
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+<script>
+let font;
+let img;
+
+async function setup() {
+  createCanvas(windowWidth, windowHeight);
+  font = await loadFont('SourceHanSerifSC-Regular.otf');
+  img = await loadImage('tree.png');
+}
+
+function draw() {
+  background(0);
+
+  textAlign(CENTER, CENTER);
+  textSize(240);
+  noFill();
+
+  let contours = font.textToContours('树冠微风', width / 2, height / 2, {
+    sampleFactor: 0.1
+  });
+
+  // create a clipping mask from the stroked text contours
+  drawingContext.save();
+
+  drawingContext.beginPath();
+
+  for (let layer = 0; layer < 1; layer++) {
+    let maxExpand = layer * 2;
+
+    for (const pts of contours) {
+      if (pts.length === 0) continue;
+
+      for (let i = 0; i < pts.length; i++) {
+        const pt = pts[i];
+
+        let d = dist(pt.x, pt.y, mouseX, mouseY);
+        let influence = map(d, 0, 150, 1, 0, true);
+
+        let wobbleAmount = influence * 10;
+        let wobbleX = wobbleAmount * sin(pt.y * 0.1 + millis() * 0.01);
+        let wobbleY = wobbleAmount * cos(pt.x * 0.1 + millis() * 0.01);
+
+        let expand = maxExpand * influence;
+
+        let dx = pt.x - mouseX;
+        let dy = pt.y - mouseY;
+        let angle = atan2(dy, dx);
+
+        let x = pt.x + wobbleX + cos(angle) * expand;
+        let y = pt.y + wobbleY + sin(angle) * expand;
+
+        if (i === 0) {
+          drawingContext.moveTo(x, y);
+        } else {
+          drawingContext.lineTo(x, y);
+        }
+      }
+
+      drawingContext.closePath();
+    }
+  }
+
+  drawingContext.lineWidth = 1;
+  drawingContext.stroke();
+
+  // this makes only the stroke area become the mask
+  drawingContext.clip();
+
+  // draw image through the mask
+  image(img, 0, 0, width, height);
+
+  drawingContext.restore();
+    
+    for (let layer = 0; layer <10; layer++) {
+    let maxExpand = layer * 3;
+//    stroke(50 + layer * 14);
+      strokeWeight(layer*0.06)
+      stroke(
+      
+      180 - sin(frameCount*0.1 + layer * 0.4) * 60
+    );
+
+    for (const pts of contours) {
+      beginShape();
+
+      for (const pt of pts) {
+        let d = dist(pt.x, pt.y, mouseX, mouseY);
+
+        // how much this point is affected by the mouse
+        let influence = map(d, 0, 150, 1, 0, true);
+
+        // wobble also grows when mouse gets closer
+        let wobbleAmount = influence * 10;
+        let wobbleX = wobbleAmount * sin(pt.y * 0.1 + millis() * 0.01);
+        let wobbleY = wobbleAmount * cos(pt.x * 0.1 + millis() * 0.01);
+
+        // expansion is hidden when far away, revealed when close
+        let expand = maxExpand * influence;
+
+        let dx = pt.x - mouseX;
+        let dy = pt.y - mouseY;
+        let angle = atan2(dy, dx);
+
+        let x = pt.x + wobbleX + cos(angle) * expand;
+        let y = pt.y + wobbleY + sin(angle) * expand;
+
+        splineVertex(x, y);
+      }
+
+      endShape(CLOSE);
+    }
+  }
+
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+</script>
+</body>
+</html>
