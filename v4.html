@@ -32,7 +32,7 @@ function draw() {
   background(0);
 
   textAlign(CENTER, CENTER);
-  textSize(240);
+  textSize(340);
   noFill();
 
   let contours = font.textToContours('树冠微风', width / 2, height / 2, {
@@ -54,7 +54,7 @@ function draw() {
         const pt = pts[i];
 
         let d = dist(pt.x, pt.y, mouseX, mouseY);
-        let influence = map(d, 0, 150, 1, 0, true);
+        let influence = map(d, 0, 250, 1, 0, true);
 
         let wobbleAmount = influence * 10;
         let wobbleX = wobbleAmount * sin(pt.y * 0.1 + millis() * 0.01);
@@ -91,8 +91,8 @@ function draw() {
 
   drawingContext.restore();
     
-    for (let layer = 0; layer <10; layer++) {
-    let maxExpand = layer * 3;
+    for (let layer = 0; layer <12; layer++) {
+    let maxExpand = layer * 5;
 //    stroke(50 + layer * 14);
       strokeWeight(layer*0.06)
       stroke(

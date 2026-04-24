@@ -29,7 +29,7 @@ async function setup() {
 function draw() {
   background(0);
   textAlign(CENTER, CENTER);
-  textSize(240);
+  textSize(340);
   noFill();
 
   let contours = font.textToContours('树冠微风', width / 2, height / 2, {
@@ -52,7 +52,7 @@ function draw() {
         let d = dist(pt.x, pt.y, mouseX, mouseY);
 
         // how much this point is affected by the mouse
-        let influence = map(d, 0, 150, 1, 0, true);
+        let influence = map(d, 0, 250, 1, 0, true);
 
         // wobble also grows when mouse gets closer
         let wobbleAmount = influence * 10;
